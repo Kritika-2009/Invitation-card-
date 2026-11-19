@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Alert</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f4f4f9;
+      color: #1f2937;
+      padding: 1rem;
+    }
+    .card {
+      background: #ffffff;
+      padding: 2.5rem 2rem;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 0.75rem; }
+    p { color: #6b7280; margin-bottom: 1.75rem; line-height: 1.5; }
+    button {
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 0.95rem 1.5rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:disabled { background-color: #10b981; cursor: default; }
+    .status { margin-top: 1rem; font-size: 0.9rem; color: #6b7280; min-height: 1.25rem; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Welcome!</h1>
+    <p>Tap the button below to send an instant notification.</p>
+    <button id="notifyBtn" onclick="sendNotification()">Notify Now</button>
+    <div id="statusText" class="status"></div>
+  </div>
+
+  <script>
+    // PASTE YOUR SECRET TOPIC NAME BETWEEN THE QUOTES BELOW:
+    const NTFY_TOPIC = "School_Annual_Day_Invitation";
+
+    async function sendNotification() {
+      const btn = document.getElementById("notifyBtn");
+      const status = document.getElementById("statusText");
+
+      btn.disabled = true;
+      btn.innerText = "Sending...";
+      status.innerText = "";
+
+      try {
+        const response = await fetch(`https://ntfy.sh{encodeURIComponent(NTFY_TOPIC)}`, {
+          method: "POST",
+          body: "Someone scanned your QR code and clicked the button!",
+          headers: {
+            "Title": "QR Button Clicked",
+            "Priority": "high"
+          }
+        });
+
+        if (!response.ok) throw new Error("Failed");
+
+        btn.innerText = "Notification Sent!";
+        status.innerText = "The owner has been alerted.";
+      } catch (error) {
+        btn.disabled = false;
+        btn.innerText = "Notify Now";
+        status.innerText = "Error sending alert. Please try again.";
+      }
+    }
+  </script>
+
+</body>
+</html>
